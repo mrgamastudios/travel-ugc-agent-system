@@ -1,0 +1,27 @@
+{
+  "model": "gemma-2b-edge",
+  "device": "ios-pro-max",
+  "runtime": "local_edge",
+  "privacy_mode": true,
+  "voice_clone": {
+    "sample_duration_seconds": 30,
+    "preferred_formats": ["wav", "m4a", "mp3"],
+    "voice_style": "casual_storytelling",
+    "save_local": true
+  },
+  "video": {
+    "aspect_ratio": "9:16",
+    "default_duration_seconds": 25,
+    "max_resolution": "1080x1920",
+    "auto_captions": true,
+    "smart_cut": true,
+    "music_sync": true,
+    "free_stock_sources": ["Pexels", "Pixabay", "Unsplash"]
+  },
+  "funnel": {
+    "ugc_first": true,
+    "niche_before_offer": true,
+    "digital_product_after_trust": true,
+    "affiliate_link_tracking": true
+  }
+}

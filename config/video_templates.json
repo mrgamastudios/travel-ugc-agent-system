@@ -1,0 +1,25 @@
+{
+  "templates": [
+    {
+      "name": "travel_vlog_hero",
+      "duration_seconds": 20,
+      "transition": "cut",
+      "caption_style": "bold_uppercase",
+      "cta": "Link in bio for the guide"
+    },
+    {
+      "name": "destination_hype",
+      "duration_seconds": 15,
+      "transition": "zoom",
+      "caption_style": "clean",
+      "cta": "Save this before your next trip"
+    },
+    {
+      "name": "itinerary_listicle",
+      "duration_seconds": 30,
+      "transition": "match_cut",
+      "caption_style": "minimal",
+      "cta": "Get the itinerary in the link"
+    }
+  ]
+}

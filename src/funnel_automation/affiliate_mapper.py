@@ -1,44 +1,32 @@
 import argparse
 import json
-from pathlib import Path
+from urllib.parse import urlparse
 
 
 class AffiliateMapper:
-    def __init__(self):
-        self.networks = {
-            "booking.com": {"commission_type": "percentage", "default_rate": "10%", "category": "hotels"},
-            "expedia": {"commission_type": "percentage", "default_rate": "8%", "category": "travel"},
-            "skyscanner": {"commission_type": "commission", "default_rate": "varies", "category": "flights"},
-            "getyourguide": {"commission_type": "percentage", "default_rate": "5%", "category": "experiences"},
-            "airbnb": {"commission_type": "referral", "default_rate": "varies", "category": "stays"},
-        }
+    def __init__(self, offers=None):
+        self.offers = offers or []
 
     def map_offer(self, destination, type_name="hotel"):
-        return {
-            "destination": destination,
-            "type": type_name,
-            "network": "booking.com",
-            "recommended_link": "https://www.booking.com",
-            "commission": self.networks["booking.com"]["default_rate"],
-            "notes": "Best default affiliate fit for travel accommodation offers"
-        }
+        matches = [o for o in self.offers if o.get("category") == type_name
+                   and o.get("approved") is True and o.get("verified_at")
+                   and urlparse(o.get("tracking_url", "")).scheme == "https"
+                   and urlparse(o.get("tracking_url", "")).hostname]
+        return {"destination": destination, "type": type_name,
+                "status": "requires_manual_offer_review" if matches else "no_verified_offer",
+                "offers": matches}
 
     def track(self, affiliate_id, campaign_name, clicks=0, conversions=0):
-        return {
-            "affiliate_id": affiliate_id,
-            "campaign_name": campaign_name,
-            "clicks": clicks,
-            "conversions": conversions,
-            "roi": round((conversions / clicks) * 100, 2) if clicks else 0,
-            "status": "tracking_ready"
-        }
+        if min(clicks, conversions) < 0:
+            raise ValueError("Counts must be nonnegative")
+        return {"affiliate_id": affiliate_id, "campaign_name": campaign_name,
+                "clicks": clicks, "conversions": conversions,
+                "conversion_rate_percent": round(conversions / clicks * 100, 2) if clicks else 0}
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Map a travel destination to an affiliate offer")
-    parser.add_argument("--destination", default="Bali")
-    parser.add_argument("--type", default="hotel")
-    args = parser.parse_args()
-
-    result = AffiliateMapper().map_offer(args.destination, args.type)
-    print(json.dumps(result, indent=2))
+    p = argparse.ArgumentParser()
+    p.add_argument("--destination", required=True)
+    p.add_argument("--type", default="hotel")
+    a = p.parse_args()
+    print(json.dumps(AffiliateMapper().map_offer(a.destination, a.type), indent=2))
